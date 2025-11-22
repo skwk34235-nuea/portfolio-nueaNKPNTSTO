@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio nuea Saengthong Auncharoen</title>
+    <title>Portfolio Nuea Sarngthong Auncharoen</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
 
     <script>
-        // 🔴 URL API (อันเดิมที่ใช้อยู่) 🔴
+        // 🔴 URL API 🔴
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxn5Fo69884yHByJAq1n7cPslpIbume1D0PNKXxP9wcXL3WYsxQy04uBhiUKTDBMoMF/exec"; 
 
         tailwind.config = {
@@ -59,7 +59,7 @@
     <nav class="bg-white/90 backdrop-blur sticky top-0 z-50 shadow-sm">
         <div class="max-w-6xl mx-auto px-4 flex justify-between items-center py-4">
             <div class="text-2xl font-bold text-p-dark cursor-pointer hover:opacity-80 transition" onclick="router.navigate('/')">
-                <i class="fas fa-folder-open mr-2"></i>Portfolio<span class="font-bold text-gray-800">แสงทอง อุ่นเจริญ</span>
+                <i class="fas fa-folder-open mr-2"></i>Portfolio
             </div>
             <div class="hidden md:flex space-x-6 font-medium">
                 <a href="#" onclick="router.navigate('/'); return false;" class="hover:text-p-dark">หน้าหลัก</a>
@@ -265,13 +265,30 @@
         // --- ROUTER ---
         const router = {
             navigate(path) {
+                // 🔒 AUTH GUARD LOGIC (ตรวจสอบสิทธิ์)
+                const token = localStorage.getItem('token'); // ใช้ localStorage แทน sessionStorage
+
+                // 1. ถ้าจะไปหน้า Login (/admin) แต่มี Token แล้ว -> ดีดไป Dashboard
+                if (path === '/admin' && token) {
+                    this.navigate('/dashboard');
+                    return;
+                }
+
+                // 2. ถ้าจะไปหน้า Dashboard แต่ไม่มี Token -> ดีดกลับไปหน้า Login (/admin)
+                if (path === '/dashboard' && !token) {
+                    this.navigate('/admin');
+                    return;
+                }
+
+                // Hide all views
                 document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+                
+                // Show target view
                 if(path === '/') document.getElementById('view-index').classList.add('active');
                 else if(path === '/education') document.getElementById('view-education').classList.add('active');
                 else if(path === '/activity') document.getElementById('view-activity').classList.add('active');
                 else if(path === '/admin') document.getElementById('view-admin').classList.add('active');
                 else if(path === '/dashboard') {
-                    if(!sessionStorage.getItem('token')) { this.navigate('/admin'); return; }
                     document.getElementById('view-dashboard').classList.add('active');
                     app.renderDashboard(); 
                 }
@@ -287,6 +304,11 @@
                 this.toggleLoader(true);
                 await this.fetchData();
                 this.toggleLoader(false);
+                
+                // เมื่อโหลดเว็บ ถ้ามี Token อยู่แล้วให้เช็ค Route
+                // แต่โดยปกติหน้าแรกจะเป็น Home เสมอ
+                // ถ้า User พิมพ์ URL ตรงๆ ไม่ได้ (เพราะเป็น Single Page) 
+                // ดังนั้นให้เริ่มที่ Home (/)
                 router.navigate('/'); 
             },
 
@@ -356,7 +378,7 @@
             renderPublic() {
                 const { profile, education, activities } = this.data;
                 
-                // 1. Profile Hero: Change div background to img tag, remove rounded-full, add rounded-lg and object-contain
+                // 1. Profile Hero
                 const has = (val) => val && val.length > 1;
                 document.getElementById('home-hero').innerHTML = `
                     <img src="${profile.image || 'https://via.placeholder.com/150'}" class="w-40 h-40 mx-auto rounded-lg border-4 border-white shadow-lg mb-4 object-contain bg-gray-100">
@@ -371,7 +393,7 @@
                     </div>
                 `;
 
-                // 2. Render Edu: Change Logo from div background to img tag
+                // 2. Render Edu
                 const renderEdu = (list, targetId) => {
                     document.getElementById(targetId).innerHTML = list.map(e => `
                         <div class="bg-white p-4 rounded shadow-sm border-l-4 border-p-med flex justify-between items-center hover:shadow-md transition">
@@ -390,7 +412,7 @@
                     `).join('');
                 };
 
-                // 3. Render Act: Change Image from div background to img tag
+                // 3. Render Act
                 const renderAct = (list, targetId) => {
                     document.getElementById(targetId).innerHTML = list.map(a => `
                         <div class="bg-white rounded overflow-hidden shadow-sm hover:shadow-lg transition group">
@@ -419,14 +441,24 @@
                 const p = document.getElementById('p').value;
                 const res = await this.post({ action: 'login', username: u, password: p });
                 if(res.status === 'success') {
-                    sessionStorage.setItem('token', res.token);
+                    // 💾 บันทึก Token ลง localStorage (อยู่ถาวร)
+                    localStorage.setItem('token', res.token);
+                    // ไปหน้า Dashboard (Router จะเช็ค Token ให้เอง)
                     router.navigate('/dashboard');
                 } else { alert('Login Failed'); }
             },
 
             logout() {
-                sessionStorage.removeItem('token');
-                router.navigate('/');
+                // 🔄 แสดงหน้า Loading
+                this.toggleLoader(true, "กำลังออกจากระบบ...");
+                
+                setTimeout(() => {
+                    // 🗑️ ลบ Token ออก
+                    localStorage.removeItem('token');
+                    
+                    // รีเฟรชหน้าเว็บ (จะกลับไปหน้า Home โดยอัตโนมัติและ Token หายไปแล้ว)
+                    window.location.reload();
+                }, 2000); // รอ 2 วินาที
             },
 
             switchDashTab(tabName) {
@@ -448,7 +480,7 @@
                 document.getElementById('d-ig').value = profile.instagram || '';
                 document.getElementById('d-line').value = profile.line || '';
 
-                // Fill Edu List (Dashboard): Change thumb to background
+                // Fill Edu List (Dashboard)
                 document.getElementById('dash-edu-list').innerHTML = education.map(e => `
                     <div class="flex justify-between items-center bg-white p-3 rounded border hover:bg-gray-50">
                         <div class="flex items-center gap-2">
@@ -462,7 +494,7 @@
                     </div>
                 `).join('');
 
-                // Fill Act List (Dashboard): Change thumb to background
+                // Fill Act List (Dashboard)
                 document.getElementById('dash-act-list').innerHTML = activities.map(a => `
                     <div class="bg-white p-3 rounded border flex gap-2 relative hover:shadow-sm transition">
                         <div class="w-16 h-16 bg-cover bg-center rounded bg-gray-200 flex-shrink-0" style="background-image: url('${a.ImageURL || 'https://via.placeholder.com/150'}')"></div>
