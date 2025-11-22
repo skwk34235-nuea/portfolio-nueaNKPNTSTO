@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Nuea Sarngthong Auncharoen</title>
+    <title>My Portfolio</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
@@ -51,6 +51,22 @@
         .view-section { display: none; animation: fadeIn 0.3s ease-in-out; }
         .view-section.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Filter Buttons */
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            border: 1px solid #e5e7eb;
+            background-color: white;
+            color: #4b5563;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        .filter-btn:hover, .filter-btn.active {
+            background-color: #78A3D4;
+            color: white;
+            border-color: #78A3D4;
+        }
     </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-700 flex flex-col min-h-screen">
@@ -90,7 +106,7 @@
                     <h2 class="text-2xl font-bold text-gray-800">กิจกรรมล่าสุด</h2>
                     <button onclick="router.navigate('/activity')" class="text-sm text-p-dark hover:underline">ดูทั้งหมด <i class="fas fa-arrow-right"></i></button>
                 </div>
-                <div id="home-activity-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+                <div id="home-activity-list" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start"></div>
             </div>
         </section>
 
@@ -107,8 +123,22 @@
         <section id="view-activity" class="view-section">
             <div class="max-w-6xl mx-auto px-4 py-8">
                 <button onclick="router.navigate('/')" class="mb-6 flex items-center text-sm text-gray-500 hover:text-p-dark transition"><i class="fas fa-arrow-left mr-2"></i> กลับหน้าหลัก</button>
-                <h1 class="text-3xl font-bold text-center mb-10 text-p-dark">กิจกรรมและผลงานทั้งหมด</h1>
-                <div id="full-activity-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+                <h1 class="text-3xl font-bold text-center mb-6 text-p-dark">กิจกรรมและผลงานทั้งหมด</h1>
+                
+                <!-- Filter Buttons -->
+                <div class="flex flex-wrap justify-center gap-2 mb-8" id="activity-filters">
+                    <button onclick="app.filterActivities('all', this)" class="filter-btn active">ทั้งหมด</button>
+                    <button onclick="app.filterActivities('การเรียน', this)" class="filter-btn">การเรียน</button>
+                    <button onclick="app.filterActivities('กีฬา', this)" class="filter-btn">กีฬา</button>
+                    <button onclick="app.filterActivities('ดนตรี', this)" class="filter-btn">ดนตรี</button>
+                    <button onclick="app.filterActivities('จิตอาสา', this)" class="filter-btn">จิตอาสา</button>
+                    <button onclick="app.filterActivities('มารยาท', this)" class="filter-btn">มารยาท</button>
+                    <button onclick="app.filterActivities('ความสนใจพิเศษ', this)" class="filter-btn">ความสนใจพิเศษ</button>
+                </div>
+
+                <!-- Grid items-start เพื่อให้การ์ดที่มีความสูงต่างกันไม่ยืดตามกัน -->
+                <div id="full-activity-list" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start"></div>
+                <div id="no-activity-msg" class="text-center text-gray-500 py-10 hidden">ไม่พบกิจกรรมในหมวดหมู่นี้</div>
             </div>
         </section>
 
@@ -218,11 +248,25 @@
                             <input id="act-title" class="border p-2 rounded" placeholder="ชื่อกิจกรรม">
                             <textarea id="act-desc" class="border p-2 rounded" placeholder="รายละเอียด"></textarea>
                             <div class="grid grid-cols-2 gap-3">
-                                <input id="act-cat" class="border p-2 rounded" placeholder="หมวดหมู่">
+                                
+                                <!-- Dropdown + Custom Input -->
+                                <div>
+                                    <label class="text-xs text-gray-500 mb-1 block">หมวดหมู่</label>
+                                    <select id="act-cat" class="border p-2 rounded w-full bg-white" onchange="app.handleCatChange(this)">
+                                        <option value="การเรียน">การเรียน</option>
+                                        <option value="กีฬา">กีฬา</option>
+                                        <option value="ดนตรี">ดนตรี</option>
+                                        <option value="จิตอาสา">จิตอาสา</option>
+                                        <option value="มารยาท">มารยาท</option>
+                                        <option value="ความสนใจพิเศษ">ความสนใจพิเศษ</option>
+                                        <option value="อื่นๆ">อื่นๆ (ระบุเอง)</option>
+                                    </select>
+                                    <input id="act-cat-custom" type="text" class="border p-2 rounded w-full mt-2 hidden" placeholder="ระบุหมวดหมู่เพิ่มเติม">
+                                </div>
                                 
                                 <!-- Activity Image Upload -->
                                 <div class="col-span-1">
-                                     <label class="text-xs text-gray-500">Activity Image</label>
+                                     <label class="text-xs text-gray-500 mb-1 block">รูปภาพ</label>
                                      <div class="flex gap-2">
                                          <input id="act-img" class="w-full border p-2 rounded" placeholder="Image URL or Upload">
                                          <label class="bg-gray-200 px-4 py-2 rounded cursor-pointer hover:bg-gray-300 flex items-center">
@@ -238,7 +282,7 @@
                             </div>
                         </form>
                     </div>
-                    <div id="dash-act-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                    <div id="dash-act-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start"></div>
                 </div>
             </div>
         </section>
@@ -265,28 +309,25 @@
         // --- ROUTER ---
         const router = {
             navigate(path) {
-                // 🔒 AUTH GUARD LOGIC (ตรวจสอบสิทธิ์)
-                const token = localStorage.getItem('token'); // ใช้ localStorage แทน sessionStorage
+                const token = localStorage.getItem('token');
 
-                // 1. ถ้าจะไปหน้า Login (/admin) แต่มี Token แล้ว -> ดีดไป Dashboard
                 if (path === '/admin' && token) {
                     this.navigate('/dashboard');
                     return;
                 }
-
-                // 2. ถ้าจะไปหน้า Dashboard แต่ไม่มี Token -> ดีดกลับไปหน้า Login (/admin)
                 if (path === '/dashboard' && !token) {
                     this.navigate('/admin');
                     return;
                 }
 
-                // Hide all views
                 document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
                 
-                // Show target view
                 if(path === '/') document.getElementById('view-index').classList.add('active');
                 else if(path === '/education') document.getElementById('view-education').classList.add('active');
-                else if(path === '/activity') document.getElementById('view-activity').classList.add('active');
+                else if(path === '/activity') {
+                    document.getElementById('view-activity').classList.add('active');
+                    app.filterActivities('all');
+                }
                 else if(path === '/admin') document.getElementById('view-admin').classList.add('active');
                 else if(path === '/dashboard') {
                     document.getElementById('view-dashboard').classList.add('active');
@@ -304,11 +345,6 @@
                 this.toggleLoader(true);
                 await this.fetchData();
                 this.toggleLoader(false);
-                
-                // เมื่อโหลดเว็บ ถ้ามี Token อยู่แล้วให้เช็ค Route
-                // แต่โดยปกติหน้าแรกจะเป็น Home เสมอ
-                // ถ้า User พิมพ์ URL ตรงๆ ไม่ได้ (เพราะเป็น Single Page) 
-                // ดังนั้นให้เริ่มที่ Home (/)
                 router.navigate('/'); 
             },
 
@@ -344,7 +380,7 @@
                 
                 const reader = new FileReader();
                 reader.onload = async function(e) {
-                    const base64 = e.target.result.split(',')[1]; // Strip "data:image/..."
+                    const base64 = e.target.result.split(',')[1]; 
                     const payload = {
                         action: 'upload',
                         fileName: file.name,
@@ -378,10 +414,10 @@
             renderPublic() {
                 const { profile, education, activities } = this.data;
                 
-                // 1. Profile Hero
+                // 1. Profile Hero: Full Image, No Crop
                 const has = (val) => val && val.length > 1;
                 document.getElementById('home-hero').innerHTML = `
-                    <img src="${profile.image || 'https://via.placeholder.com/150'}" class="w-40 h-40 mx-auto rounded-lg border-4 border-white shadow-lg mb-4 object-contain bg-gray-100">
+                    <img src="${profile.image || 'https://via.placeholder.com/150'}" class="w-40 h-auto mx-auto rounded-lg border-4 border-white shadow-lg mb-4 object-contain bg-white">
                     <h1 class="text-4xl font-bold text-gray-800 mb-2">${profile.name || 'Your Name'}</h1>
                     <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-6">${profile.bio || 'No Bio'}</p>
                     <div class="flex justify-center gap-4 flex-wrap">
@@ -393,14 +429,14 @@
                     </div>
                 `;
 
-                // 2. Render Edu
+                // 2. Render Edu: Full Logo
                 const renderEdu = (list, targetId) => {
                     document.getElementById(targetId).innerHTML = list.map(e => `
                         <div class="bg-white p-4 rounded shadow-sm border-l-4 border-p-med flex justify-between items-center hover:shadow-md transition">
                             <div class="flex items-center gap-4">
                                 ${e.LogoURL 
-                                    ? `<img src="${e.LogoURL}" class="w-12 h-12 rounded-full object-cover border border-gray-200">` 
-                                    : '<div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-xs text-gray-400">No Logo</div>'
+                                    ? `<img src="${e.LogoURL}" class="w-16 h-16 object-contain bg-white border border-gray-100 rounded p-1">` 
+                                    : '<div class="w-16 h-16 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400">No Logo</div>'
                                 }
                                 <div>
                                     <div class="font-bold text-lg text-gray-800">${e.School}</div>
@@ -412,28 +448,54 @@
                     `).join('');
                 };
 
-                // 3. Render Act
-                const renderAct = (list, targetId) => {
-                    document.getElementById(targetId).innerHTML = list.map(a => `
-                        <div class="bg-white rounded overflow-hidden shadow-sm hover:shadow-lg transition group">
-                            <div class="h-40 bg-gray-200 relative overflow-hidden">
-                                <img src="${a.ImageURL || 'https://via.placeholder.com/300'}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
-                                <span class="absolute top-2 right-2 bg-white/80 px-2 py-1 text-xs rounded font-bold">${a.Category}</span>
-                            </div>
-                            <div class="p-4">
-                                <h3 class="font-bold text-gray-800 truncate">${a.Title}</h3>
-                                <p class="text-sm text-gray-500 line-clamp-2 mt-1">${a.Description}</p>
-                            </div>
-                        </div>
-                    `).join('');
-                };
-
-                // Lists
+                // 3. Lists
                 renderEdu([...education].reverse().slice(0, 3), 'home-education-list');
-                renderAct([...activities].reverse().slice(0, 3), 'home-activity-list');
+                this.renderActList([...activities].reverse().slice(0, 3), 'home-activity-list');
                 renderEdu([...education].reverse(), 'full-education-list');
-                renderAct([...activities].reverse(), 'full-activity-list');
             },
+
+            filterActivities(category, btnElement) {
+                const allActs = [...this.data.activities].reverse();
+                let filtered = allActs;
+
+                if(btnElement) {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    btnElement.classList.add('active');
+                } else {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    document.querySelector('.filter-btn:first-child').classList.add('active');
+                }
+
+                if(category !== 'all') {
+                    filtered = allActs.filter(a => a.Category === category);
+                }
+
+                if(filtered.length === 0) {
+                    document.getElementById('full-activity-list').innerHTML = '';
+                    document.getElementById('no-activity-msg').classList.remove('hidden');
+                } else {
+                    document.getElementById('no-activity-msg').classList.add('hidden');
+                    this.renderActList(filtered, 'full-activity-list');
+                }
+            },
+
+            // 🟢 Render Act List: Full Height Image
+            renderActList(list, targetId) {
+                document.getElementById(targetId).innerHTML = list.map(a => `
+                    <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition group border border-gray-100">
+                        <div class="w-full bg-gray-50 relative">
+                            <!-- Use object-contain or h-auto to show full height -->
+                            <img src="${a.ImageURL || 'https://via.placeholder.com/300'}" class="w-full h-auto object-contain max-h-[500px] mx-auto">
+                            <span class="absolute top-2 right-2 bg-white/90 px-2 py-1 text-xs rounded shadow font-bold text-p-dark">${a.Category || 'General'}</span>
+                        </div>
+                        <div class="p-5">
+                            <h3 class="font-bold text-lg text-gray-800 mb-2">${a.Title}</h3>
+                            <p class="text-sm text-gray-600">${a.Description}</p>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
 
             async login(e) {
                 e.preventDefault();
@@ -441,24 +503,17 @@
                 const p = document.getElementById('p').value;
                 const res = await this.post({ action: 'login', username: u, password: p });
                 if(res.status === 'success') {
-                    // 💾 บันทึก Token ลง localStorage (อยู่ถาวร)
                     localStorage.setItem('token', res.token);
-                    // ไปหน้า Dashboard (Router จะเช็ค Token ให้เอง)
                     router.navigate('/dashboard');
                 } else { alert('Login Failed'); }
             },
 
             logout() {
-                // 🔄 แสดงหน้า Loading
                 this.toggleLoader(true, "กำลังออกจากระบบ...");
-                
                 setTimeout(() => {
-                    // 🗑️ ลบ Token ออก
                     localStorage.removeItem('token');
-                    
-                    // รีเฟรชหน้าเว็บ (จะกลับไปหน้า Home โดยอัตโนมัติและ Token หายไปแล้ว)
                     window.location.reload();
-                }, 2000); // รอ 2 วินาที
+                }, 2000);
             },
 
             switchDashTab(tabName) {
@@ -470,7 +525,6 @@
 
             renderDashboard() {
                 const { profile, education, activities } = this.data;
-                // Fill Profile
                 document.getElementById('d-name').value = profile.name || '';
                 document.getElementById('d-bio').value = profile.bio || '';
                 document.getElementById('d-img').value = profile.image || '';
@@ -480,11 +534,11 @@
                 document.getElementById('d-ig').value = profile.instagram || '';
                 document.getElementById('d-line').value = profile.line || '';
 
-                // Fill Edu List (Dashboard)
+                // Dash Edu List
                 document.getElementById('dash-edu-list').innerHTML = education.map(e => `
                     <div class="flex justify-between items-center bg-white p-3 rounded border hover:bg-gray-50">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 bg-cover bg-center rounded bg-gray-200" style="background-image: url('${e.LogoURL || 'https://via.placeholder.com/50'}')"></div>
+                        <div class="flex items-center gap-3">
+                            <img src="${e.LogoURL || 'https://via.placeholder.com/50'}" class="w-10 h-10 object-contain bg-white border rounded">
                             <div><span class="font-bold text-p-dark">${e.Year}</span> ${e.School}</div>
                         </div>
                         <div class="space-x-2">
@@ -494,13 +548,14 @@
                     </div>
                 `).join('');
 
-                // Fill Act List (Dashboard)
+                // Dash Act List
                 document.getElementById('dash-act-list').innerHTML = activities.map(a => `
-                    <div class="bg-white p-3 rounded border flex gap-2 relative hover:shadow-sm transition">
-                        <div class="w-16 h-16 bg-cover bg-center rounded bg-gray-200 flex-shrink-0" style="background-image: url('${a.ImageURL || 'https://via.placeholder.com/150'}')"></div>
+                    <div class="bg-white p-3 rounded border flex gap-3 relative hover:shadow-sm transition items-start">
+                        <img src="${a.ImageURL || 'https://via.placeholder.com/150'}" class="w-20 h-20 object-contain bg-gray-100 rounded border flex-shrink-0">
                         <div class="flex-grow overflow-hidden">
                             <div class="font-bold truncate text-gray-800">${a.Title}</div>
-                            <div class="text-xs text-gray-500">${a.Category}</div>
+                            <div class="text-xs text-gray-500 mb-1">${a.Category}</div>
+                            <div class="text-xs text-gray-400 truncate">${a.Description}</div>
                         </div>
                         <div class="absolute top-2 right-2 space-x-1 bg-white/90 p-1 rounded shadow-sm">
                             <button onclick='app.editAct(${JSON.stringify(a)})' class="text-blue-500 text-xs p-1 hover:bg-blue-50 rounded"><i class="fas fa-pen"></i></button>
@@ -510,7 +565,6 @@
                 `).join('');
             },
 
-            // --- SAVE ACTIONS ---
             async saveProfile(e) {
                 e.preventDefault();
                 await this.post({
@@ -537,7 +591,7 @@
                 document.getElementById('edu-level').value = item.Level;
                 document.getElementById('edu-school').value = item.School;
                 document.getElementById('edu-gpa').value = item.GPA;
-                document.getElementById('edu-logo').value = item.LogoURL || ''; // Load Logo
+                document.getElementById('edu-logo').value = item.LogoURL || ''; 
                 
                 document.getElementById('edu-submit-btn').innerText = "บันทึกการแก้ไข";
                 document.getElementById('edu-submit-btn').classList.replace('bg-green-500', 'bg-blue-500');
@@ -572,19 +626,43 @@
                     level: document.getElementById('edu-level').value,
                     school: document.getElementById('edu-school').value,
                     gpa: document.getElementById('edu-gpa').value,
-                    logo: document.getElementById('edu-logo').value // Save Logo
+                    logo: document.getElementById('edu-logo').value
                 });
                 this.resetEduForm();
                 await this.fetchData();
                 this.renderDashboard();
             },
 
+            handleCatChange(el) {
+                const customInput = document.getElementById('act-cat-custom');
+                if (el.value === 'อื่นๆ') {
+                    customInput.classList.remove('hidden');
+                    customInput.required = true;
+                } else {
+                    customInput.classList.add('hidden');
+                    customInput.required = false;
+                    customInput.value = ''; // Clear custom value
+                }
+            },
+
             editAct(item) {
                 document.getElementById('act-id').value = item.ID;
                 document.getElementById('act-title').value = item.Title;
                 document.getElementById('act-desc').value = item.Description;
-                document.getElementById('act-cat').value = item.Category;
                 document.getElementById('act-img').value = item.ImageURL;
+
+                const select = document.getElementById('act-cat');
+                const customInput = document.getElementById('act-cat-custom');
+                const options = Array.from(select.options).map(o => o.value);
+
+                if (options.includes(item.Category)) {
+                    select.value = item.Category;
+                    customInput.classList.add('hidden');
+                } else {
+                    select.value = 'อื่นๆ';
+                    customInput.value = item.Category;
+                    customInput.classList.remove('hidden');
+                }
 
                 document.getElementById('act-submit-btn').innerText = "บันทึกการแก้ไข";
                 document.getElementById('act-submit-btn').classList.replace('bg-purple-500', 'bg-blue-500');
@@ -592,11 +670,14 @@
                 document.getElementById('act-form-title').innerText = "แก้ไขกิจกรรม";
                 window.scrollTo(0,0);
             },
+
             resetActForm() {
                 document.getElementById('act-id').value = "";
                 document.getElementById('act-title').value = "";
                 document.getElementById('act-desc').value = "";
-                document.getElementById('act-cat').value = "";
+                document.getElementById('act-cat').value = "การเรียน";
+                document.getElementById('act-cat-custom').value = "";
+                document.getElementById('act-cat-custom').classList.add('hidden');
                 document.getElementById('act-img').value = "";
 
                 document.getElementById('act-submit-btn').innerText = "เพิ่มกิจกรรม";
@@ -604,16 +685,24 @@
                 document.getElementById('act-cancel-btn').classList.add('hidden');
                 document.getElementById('act-form-title').innerText = "เพิ่มกิจกรรมใหม่";
             },
+
             async saveActivity(e) {
                 e.preventDefault();
                 const id = document.getElementById('act-id').value;
+                
+                let category = document.getElementById('act-cat').value;
+                if (category === 'อื่นๆ') {
+                    category = document.getElementById('act-cat-custom').value;
+                    if(!category.trim()) { alert('กรุณาระบุหมวดหมู่เพิ่มเติม'); return; }
+                }
+
                 await this.post({
                     action: id ? 'edit' : 'add',
                     type: 'activities',
                     id: id,
                     title: document.getElementById('act-title').value,
                     desc: document.getElementById('act-desc').value,
-                    category: document.getElementById('act-cat').value,
+                    category: category,
                     image: document.getElementById('act-img').value
                 });
                 this.resetActForm();
