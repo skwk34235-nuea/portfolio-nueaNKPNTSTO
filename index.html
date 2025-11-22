@@ -358,7 +358,7 @@
                 try {
                     const res = await fetch(APPS_SCRIPT_URL);
                     const json = await res.json();
-                    this.data = json.data;''''''''''''
+                    this.data = json.data;
                     this.renderPublic();
                 } catch(e) { console.error(e); alert("Connection Error"); }
             },
