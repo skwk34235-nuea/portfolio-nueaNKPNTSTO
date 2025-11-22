@@ -8,8 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="icon" href="https://lh3.googleusercontent.com/d/1ZaqaGtuNJVTbq2ZpS2f5zkkSXdVCLNJ-">
-
+    <link href="https://lh3.googleusercontent.com/d/1ZaqaGtuNJVTbq2ZpS2f5zkkSXdVCLNJ-" rel="icon">
+'
     <script>
         // 🔴 URL API 🔴
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxn5Fo69884yHByJAq1n7cPslpIbume1D0PNKXxP9wcXL3WYsxQy04uBhiUKTDBMoMF/exec"; 
@@ -104,7 +104,7 @@
                 </div>
                 <div id="home-education-list" class="space-y-4 mb-16"></div>
                 <div class="flex justify-between items-end mb-6 border-b pb-2 border-gray-200">
-                    <h2 class="text-2xl font-bold text-gray-800">กิจกรรมล่าสุด</h2>
+                    <h2 class="text-2xl font-bold text-gray-800">กิจกรรมแนะนำ</h2>
                     <button onclick="router.navigate('/activity')" class="text-sm text-p-dark hover:underline">ดูทั้งหมด <i class="fas fa-arrow-right"></i></button>
                 </div>
                 <div id="home-activity-list" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start"></div>
@@ -358,7 +358,7 @@
                 try {
                     const res = await fetch(APPS_SCRIPT_URL);
                     const json = await res.json();
-                    this.data = json.data;
+                    this.data = json.data;''''''''''''
                     this.renderPublic();
                 } catch(e) { console.error(e); alert("Connection Error"); }
             },
@@ -451,7 +451,11 @@
 
                 // 3. Lists
                 renderEdu([...education].reverse().slice(0, 3), 'home-education-list');
-                this.renderActList([...activities].reverse().slice(0, 3), 'home-activity-list');
+                
+                // 🔴 CHANGED: Random 3 activities instead of latest 3
+                const randomActivities = [...activities].sort(() => 0.5 - Math.random()).slice(0, 3);
+                this.renderActList(randomActivities, 'home-activity-list');
+                
                 renderEdu([...education].reverse(), 'full-education-list');
             },
 
