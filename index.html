@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Portfolio</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        // 🔴 URL API (อันเดิมที่ใช้อยู่) 🔴
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxn5Fo69884yHByJAq1n7cPslpIbume1D0PNKXxP9wcXL3WYsxQy04uBhiUKTDBMoMF/exec"; 
+
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Noto Sans Thai', 'sans-serif'] },
+                    colors: {
+                        'p-dark': '#78A3D4', 'p-med': '#8BADD3', 'p-light': '#CFE0EB',
+                        'fb': '#1877F2', 'ig': '#E4405F', 'line': '#06C755'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { scroll-behavior: smooth; }
+        .loader { border-top-color: #78A3D4; animation: spinner 1s linear infinite; }
+        @keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .blob-btn {
+            width: 3rem; height: 3rem;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: 1.2rem;
+            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+            transition: all 0.4s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .blob-btn:hover { transform: scale(1.1) rotate(10deg); border-radius: 50%; }
+        
+        /* Colors for Blobs */
+        .bg-fb-blob { background: linear-gradient(135deg, #1877F2, #3b5998); }
+        .bg-ig-blob { background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCAF45); }
+        .bg-line-blob { background: linear-gradient(135deg, #06C755, #00B900); }
+        .bg-mail-blob { background: #6B7280; }
+        .bg-phone-blob { background: #10B981; }
+
+        .view-section { display: none; animation: fadeIn 0.3s ease-in-out; }
+        .view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-gray-50 font-sans text-gray-700 flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white/90 backdrop-blur sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center py-4">
+            <div class="text-2xl font-bold text-p-dark cursor-pointer hover:opacity-80 transition" onclick="router.navigate('/')">
+                <i class="fas fa-folder-open mr-2"></i>Portfolio
+            </div>
+            <div class="hidden md:flex space-x-6 font-medium">
+                <a href="#" onclick="router.navigate('/'); return false;" class="hover:text-p-dark">หน้าหลัก</a>
+                <a href="#" onclick="router.navigate('/education'); return false;" class="hover:text-p-dark">ประวัติการศึกษา</a>
+                <a href="#" onclick="router.navigate('/activity'); return false;" class="hover:text-p-dark">กิจกรรม</a>
+                <button onclick="router.navigate('/admin')" class="text-gray-400 hover:text-p-dark" title="Admin Login"><i class="fas fa-cog"></i></button>
+            </div>
+            <div class="md:hidden flex items-center space-x-4">
+                <button onclick="router.navigate('/')" class="text-p-dark hover:bg-gray-100 p-2 rounded-full transition"><i class="fas fa-home text-xl"></i></button>
+                <button onclick="router.navigate('/admin')" class="text-gray-500 hover:bg-gray-100 p-2 rounded-full transition"><i class="fas fa-user-cog text-xl"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="app-root" class="flex-grow relative">
+
+        <!-- VIEW: INDEX -->
+        <section id="view-index" class="view-section">
+            <div id="home-hero" class="pt-16 pb-10 text-center px-4 bg-gradient-to-b from-white to-p-light/30"></div>
+            <div class="max-w-6xl mx-auto px-4 py-12">
+                <div class="flex justify-between items-end mb-6 border-b pb-2 border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-800">การศึกษาล่าสุด</h2>
+                    <button onclick="router.navigate('/education')" class="text-sm text-p-dark hover:underline">ดูทั้งหมด <i class="fas fa-arrow-right"></i></button>
+                </div>
+                <div id="home-education-list" class="space-y-4 mb-16"></div>
+                <div class="flex justify-between items-end mb-6 border-b pb-2 border-gray-200">
+                    <h2 class="text-2xl font-bold text-gray-800">กิจกรรมล่าสุด</h2>
+                    <button onclick="router.navigate('/activity')" class="text-sm text-p-dark hover:underline">ดูทั้งหมด <i class="fas fa-arrow-right"></i></button>
+                </div>
+                <div id="home-activity-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- VIEW: EDUCATION -->
+        <section id="view-education" class="view-section">
+            <div class="max-w-4xl mx-auto px-4 py-8">
+                <button onclick="router.navigate('/')" class="mb-6 flex items-center text-sm text-gray-500 hover:text-p-dark transition"><i class="fas fa-arrow-left mr-2"></i> กลับหน้าหลัก</button>
+                <h1 class="text-3xl font-bold text-center mb-10 text-p-dark">ประวัติการศึกษาทั้งหมด</h1>
+                <div id="full-education-list" class="space-y-6 border-l-4 border-p-med pl-6 ml-4 relative"></div>
+            </div>
+        </section>
+
+        <!-- VIEW: ACTIVITY -->
+        <section id="view-activity" class="view-section">
+            <div class="max-w-6xl mx-auto px-4 py-8">
+                <button onclick="router.navigate('/')" class="mb-6 flex items-center text-sm text-gray-500 hover:text-p-dark transition"><i class="fas fa-arrow-left mr-2"></i> กลับหน้าหลัก</button>
+                <h1 class="text-3xl font-bold text-center mb-10 text-p-dark">กิจกรรมและผลงานทั้งหมด</h1>
+                <div id="full-activity-list" class="grid grid-cols-1 md:grid-cols-3 gap-6"></div>
+            </div>
+        </section>
+
+        <!-- VIEW: ADMIN LOGIN -->
+        <section id="view-admin" class="view-section">
+            <div class="min-h-[60vh] flex flex-col items-center justify-center px-4">
+                 <button onclick="router.navigate('/')" class="mb-8 flex items-center text-sm text-gray-500 hover:text-p-dark transition"><i class="fas fa-arrow-left mr-2"></i> กลับหน้าหลัก</button>
+                <div class="bg-white p-8 rounded-xl shadow-lg w-full max-w-md border border-gray-100">
+                    <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Admin Login</h2>
+                    <form onsubmit="app.login(event)">
+                        <input type="text" id="u" placeholder="Username" class="w-full p-3 mb-3 border rounded bg-gray-50 outline-none focus:border-p-dark">
+                        <input type="password" id="p" placeholder="Password" class="w-full p-3 mb-6 border rounded bg-gray-50 outline-none focus:border-p-dark">
+                        <button type="submit" class="w-full bg-p-dark text-white py-3 rounded font-bold hover:bg-p-med transition shadow-md">เข้าสู่ระบบ</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW: ADMIN DASHBOARD -->
+        <section id="view-dashboard" class="view-section">
+            <div class="max-w-6xl mx-auto px-4 py-10">
+                <div class="flex justify-between items-center mb-8 bg-white p-4 rounded shadow-sm border border-gray-100">
+                    <div class="flex items-center">
+                        <button onclick="router.navigate('/')" class="mr-4 text-gray-400 hover:text-p-dark" title="Go Home"><i class="fas fa-home"></i></button>
+                        <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+                    </div>
+                    <button onclick="app.logout()" class="text-red-500 hover:bg-red-50 px-4 py-2 rounded border border-red-200 transition"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+                </div>
+
+                <div class="flex space-x-2 mb-6 border-b overflow-x-auto pb-2">
+                    <button onclick="app.switchDashTab('profile')" class="dash-tab px-4 py-2 border-b-2 border-transparent hover:border-p-dark whitespace-nowrap">Profile</button>
+                    <button onclick="app.switchDashTab('education')" class="dash-tab px-4 py-2 border-b-2 border-transparent hover:border-p-dark whitespace-nowrap">Education</button>
+                    <button onclick="app.switchDashTab('activity')" class="dash-tab px-4 py-2 border-b-2 border-transparent hover:border-p-dark whitespace-nowrap">Activities</button>
+                </div>
+
+                <!-- Dash: Profile -->
+                <div id="dash-profile" class="dash-content hidden">
+                    <div class="bg-white p-6 rounded shadow-sm max-w-2xl border border-gray-100">
+                        <form onsubmit="app.saveProfile(event)" class="space-y-4">
+                            <h3 class="font-bold border-b pb-2 text-gray-700">ข้อมูลส่วนตัว</h3>
+                            <input id="d-name" class="w-full border p-2 rounded" placeholder="Name">
+                            <textarea id="d-bio" class="w-full border p-2 rounded h-24" placeholder="Bio"></textarea>
+                            
+                            <!-- Image Upload -->
+                            <div>
+                                <label class="text-xs text-gray-500">Profile Image</label>
+                                <div class="flex gap-2">
+                                    <input id="d-img" class="w-full border p-2 rounded" placeholder="Image URL or Upload">
+                                    <label class="bg-gray-200 px-4 py-2 rounded cursor-pointer hover:bg-gray-300 flex items-center">
+                                        <i class="fas fa-upload"></i>
+                                        <input type="file" class="hidden" onchange="app.handleUpload(this, 'd-img')">
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <h3 class="font-bold border-b pb-2 pt-4 text-gray-700">การติดต่อ</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <input id="d-email" class="border p-2 rounded" placeholder="Email">
+                                <input id="d-phone" class="border p-2 rounded" placeholder="Phone">
+                                <input id="d-fb" class="border p-2 rounded" placeholder="Facebook URL">
+                                <input id="d-ig" class="border p-2 rounded" placeholder="Instagram URL">
+                                <input id="d-line" class="border p-2 rounded" placeholder="Line URL">
+                            </div>
+                            <button type="submit" class="bg-p-dark text-white px-6 py-3 rounded w-full hover:bg-p-med font-bold shadow mt-4">บันทึก Profile</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Dash: Education -->
+                <div id="dash-education" class="dash-content hidden">
+                    <div class="bg-white p-6 rounded shadow-sm mb-6 border-l-4 border-green-400">
+                        <h3 class="font-bold mb-4 text-gray-700" id="edu-form-title">เพิ่มข้อมูลการศึกษาใหม่</h3>
+                        <form onsubmit="app.saveEducation(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input type="hidden" id="edu-id">
+                            <input id="edu-year" class="border p-2 rounded" placeholder="ปี (2567)">
+                            <input id="edu-level" class="border p-2 rounded" placeholder="ระดับ (ม.3)">
+                            <input id="edu-school" class="border p-2 rounded" placeholder="โรงเรียน">
+                            <input id="edu-gpa" class="border p-2 rounded" placeholder="เกรด">
+                            
+                            <!-- School Logo Upload -->
+                            <div class="col-span-full">
+                                <label class="text-xs text-gray-500">School Logo</label>
+                                <div class="flex gap-2">
+                                    <input id="edu-logo" class="w-full border p-2 rounded" placeholder="Logo URL or Upload">
+                                    <label class="bg-gray-200 px-4 py-2 rounded cursor-pointer hover:bg-gray-300 flex items-center">
+                                        <i class="fas fa-upload"></i>
+                                        <input type="file" class="hidden" onchange="app.handleUpload(this, 'edu-logo')">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-span-full flex gap-2 mt-2">
+                                <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 flex-grow shadow-sm transition" id="edu-submit-btn">เพิ่มรายการ</button>
+                                <button type="button" onclick="app.resetEduForm()" class="bg-gray-300 px-4 rounded hidden hover:bg-gray-400 transition" id="edu-cancel-btn">ยกเลิก</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="dash-edu-list" class="space-y-2"></div>
+                </div>
+
+                <!-- Dash: Activity -->
+                <div id="dash-activity" class="dash-content hidden">
+                    <div class="bg-white p-6 rounded shadow-sm mb-6 border-l-4 border-purple-400">
+                        <h3 class="font-bold mb-4 text-gray-700" id="act-form-title">เพิ่มกิจกรรมใหม่</h3>
+                        <form onsubmit="app.saveActivity(event)" class="grid gap-3">
+                            <input type="hidden" id="act-id">
+                            <input id="act-title" class="border p-2 rounded" placeholder="ชื่อกิจกรรม">
+                            <textarea id="act-desc" class="border p-2 rounded" placeholder="รายละเอียด"></textarea>
+                            <div class="grid grid-cols-2 gap-3">
+                                <input id="act-cat" class="border p-2 rounded" placeholder="หมวดหมู่">
+                                
+                                <!-- Activity Image Upload -->
+                                <div class="col-span-1">
+                                     <label class="text-xs text-gray-500">Activity Image</label>
+                                     <div class="flex gap-2">
+                                         <input id="act-img" class="w-full border p-2 rounded" placeholder="Image URL or Upload">
+                                         <label class="bg-gray-200 px-4 py-2 rounded cursor-pointer hover:bg-gray-300 flex items-center">
+                                             <i class="fas fa-upload"></i>
+                                             <input type="file" class="hidden" onchange="app.handleUpload(this, 'act-img')">
+                                         </label>
+                                     </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-2">
+                                <button type="submit" class="bg-purple-500 text-white py-2 px-4 rounded hover:bg-purple-600 flex-grow shadow-sm transition" id="act-submit-btn">เพิ่มกิจกรรม</button>
+                                <button type="button" onclick="app.resetActForm()" class="bg-gray-300 px-4 rounded hidden hover:bg-gray-400 transition" id="act-cancel-btn">ยกเลิก</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="dash-act-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer & Loaders -->
+    <footer class="bg-gray-800 text-gray-400 py-8 text-center mt-10">
+        <p>&copy; 2025 Portfolio Project.</p>
+        <div class="flex justify-center gap-4 mt-4 text-sm">
+            <span class="cursor-pointer hover:text-white" onclick="router.navigate('/')">Home</span>
+            <span class="cursor-pointer hover:text-white" onclick="router.navigate('/admin')">Admin Panel</span>
+        </div>
+    </footer>
+
+    <div id="loader" class="fixed inset-0 bg-white/90 z-[100] flex items-center justify-center hidden">
+        <div class="text-center">
+            <div class="loader h-10 w-10 rounded-full border-4 border-gray-200 mx-auto mb-2"></div>
+            <p class="text-sm text-gray-500" id="loader-text">Loading...</p>
+        </div>
+    </div>
+
+    <script>
+        // --- ROUTER ---
+        const router = {
+            navigate(path) {
+                document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+                if(path === '/') document.getElementById('view-index').classList.add('active');
+                else if(path === '/education') document.getElementById('view-education').classList.add('active');
+                else if(path === '/activity') document.getElementById('view-activity').classList.add('active');
+                else if(path === '/admin') document.getElementById('view-admin').classList.add('active');
+                else if(path === '/dashboard') {
+                    if(!sessionStorage.getItem('token')) { this.navigate('/admin'); return; }
+                    document.getElementById('view-dashboard').classList.add('active');
+                    app.renderDashboard(); 
+                }
+                window.scrollTo(0,0);
+            }
+        };
+
+        // --- APP ---
+        const app = {
+            data: null,
+            
+            async init() {
+                this.toggleLoader(true);
+                await this.fetchData();
+                this.toggleLoader(false);
+                router.navigate('/'); 
+            },
+
+            toggleLoader(show, text = "Loading...") {
+                document.getElementById('loader').classList.toggle('hidden', !show);
+                document.getElementById('loader-text').innerText = text;
+            },
+
+            async fetchData() {
+                try {
+                    const res = await fetch(APPS_SCRIPT_URL);
+                    const json = await res.json();
+                    this.data = json.data;
+                    this.renderPublic();
+                } catch(e) { console.error(e); alert("Connection Error"); }
+            },
+
+            async post(payload) {
+                this.toggleLoader(true, "Saving...");
+                try {
+                    const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                    return await res.json();
+                } catch(e) { return {status: 'error'}; }
+                finally { this.toggleLoader(false); }
+            },
+
+            // --- UPLOAD LOGIC ---
+            async handleUpload(input, targetId) {
+                const file = input.files[0];
+                if(!file) return;
+                
+                this.toggleLoader(true, "Uploading Image...");
+                
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    const base64 = e.target.result.split(',')[1]; // Strip "data:image/..."
+                    const payload = {
+                        action: 'upload',
+                        fileName: file.name,
+                        mimeType: file.type,
+                        fileData: base64
+                    };
+                    
+                    try {
+                        const res = await fetch(APPS_SCRIPT_URL, { 
+                            method: 'POST', 
+                            body: JSON.stringify(payload) 
+                        });
+                        const json = await res.json();
+                        
+                        if(json.status === 'success') {
+                            document.getElementById(targetId).value = json.url; 
+                            alert("Upload Success!");
+                        } else {
+                            alert("Upload Failed: " + json.message);
+                        }
+                    } catch(err) {
+                        console.error(err);
+                        alert("Upload Error");
+                    } finally {
+                        app.toggleLoader(false);
+                    }
+                };
+                reader.readAsDataURL(file);
+            },
+
+            renderPublic() {
+                const { profile, education, activities } = this.data;
+                
+                // 1. Profile Hero: Change div background to img tag, remove rounded-full, add rounded-lg and object-contain
+                const has = (val) => val && val.length > 1;
+                document.getElementById('home-hero').innerHTML = `
+                    <img src="${profile.image || 'https://via.placeholder.com/150'}" class="w-40 h-40 mx-auto rounded-lg border-4 border-white shadow-lg mb-4 object-contain bg-gray-100">
+                    <h1 class="text-4xl font-bold text-gray-800 mb-2">${profile.name || 'Your Name'}</h1>
+                    <p class="text-lg text-gray-600 max-w-2xl mx-auto mb-6">${profile.bio || 'No Bio'}</p>
+                    <div class="flex justify-center gap-4 flex-wrap">
+                        ${has(profile.email) ? `<a href="mailto:${profile.email}" class="blob-btn bg-mail-blob"><i class="fas fa-envelope"></i></a>` : ''}
+                        ${has(profile.phone) ? `<a href="tel:${profile.phone}" class="blob-btn bg-phone-blob"><i class="fas fa-phone"></i></a>` : ''}
+                        ${has(profile.facebook) ? `<a href="${profile.facebook}" target="_blank" class="blob-btn bg-fb-blob"><i class="fab fa-facebook-f"></i></a>` : ''}
+                        ${has(profile.instagram) ? `<a href="${profile.instagram}" target="_blank" class="blob-btn bg-ig-blob"><i class="fab fa-instagram"></i></a>` : ''}
+                        ${has(profile.line) ? `<a href="${profile.line}" target="_blank" class="blob-btn bg-line-blob"><i class="fab fa-line"></i></a>` : ''}
+                    </div>
+                `;
+
+                // 2. Render Edu: Change Logo from div background to img tag
+                const renderEdu = (list, targetId) => {
+                    document.getElementById(targetId).innerHTML = list.map(e => `
+                        <div class="bg-white p-4 rounded shadow-sm border-l-4 border-p-med flex justify-between items-center hover:shadow-md transition">
+                            <div class="flex items-center gap-4">
+                                ${e.LogoURL 
+                                    ? `<img src="${e.LogoURL}" class="w-12 h-12 rounded-full object-cover border border-gray-200">` 
+                                    : '<div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center text-xs text-gray-400">No Logo</div>'
+                                }
+                                <div>
+                                    <div class="font-bold text-lg text-gray-800">${e.School}</div>
+                                    <div class="text-sm text-gray-500">${e.Year} | ${e.Level}</div>
+                                </div>
+                            </div>
+                            <div class="bg-p-light text-p-dark px-3 py-1 rounded font-bold whitespace-nowrap">${e.GPA}</div>
+                        </div>
+                    `).join('');
+                };
+
+                // 3. Render Act: Change Image from div background to img tag
+                const renderAct = (list, targetId) => {
+                    document.getElementById(targetId).innerHTML = list.map(a => `
+                        <div class="bg-white rounded overflow-hidden shadow-sm hover:shadow-lg transition group">
+                            <div class="h-40 bg-gray-200 relative overflow-hidden">
+                                <img src="${a.ImageURL || 'https://via.placeholder.com/300'}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">
+                                <span class="absolute top-2 right-2 bg-white/80 px-2 py-1 text-xs rounded font-bold">${a.Category}</span>
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-bold text-gray-800 truncate">${a.Title}</h3>
+                                <p class="text-sm text-gray-500 line-clamp-2 mt-1">${a.Description}</p>
+                            </div>
+                        </div>
+                    `).join('');
+                };
+
+                // Lists
+                renderEdu([...education].reverse().slice(0, 3), 'home-education-list');
+                renderAct([...activities].reverse().slice(0, 3), 'home-activity-list');
+                renderEdu([...education].reverse(), 'full-education-list');
+                renderAct([...activities].reverse(), 'full-activity-list');
+            },
+
+            async login(e) {
+                e.preventDefault();
+                const u = document.getElementById('u').value;
+                const p = document.getElementById('p').value;
+                const res = await this.post({ action: 'login', username: u, password: p });
+                if(res.status === 'success') {
+                    sessionStorage.setItem('token', res.token);
+                    router.navigate('/dashboard');
+                } else { alert('Login Failed'); }
+            },
+
+            logout() {
+                sessionStorage.removeItem('token');
+                router.navigate('/');
+            },
+
+            switchDashTab(tabName) {
+                document.querySelectorAll('.dash-content').forEach(el => el.classList.add('hidden'));
+                document.getElementById(`dash-${tabName}`).classList.remove('hidden');
+                document.querySelectorAll('.dash-tab').forEach(el => el.classList.remove('border-p-dark', 'font-bold'));
+                event.target.classList.add('border-p-dark', 'font-bold');
+            },
+
+            renderDashboard() {
+                const { profile, education, activities } = this.data;
+                // Fill Profile
+                document.getElementById('d-name').value = profile.name || '';
+                document.getElementById('d-bio').value = profile.bio || '';
+                document.getElementById('d-img').value = profile.image || '';
+                document.getElementById('d-email').value = profile.email || '';
+                document.getElementById('d-phone').value = profile.phone || '';
+                document.getElementById('d-fb').value = profile.facebook || '';
+                document.getElementById('d-ig').value = profile.instagram || '';
+                document.getElementById('d-line').value = profile.line || '';
+
+                // Fill Edu List (Dashboard): Change thumb to background
+                document.getElementById('dash-edu-list').innerHTML = education.map(e => `
+                    <div class="flex justify-between items-center bg-white p-3 rounded border hover:bg-gray-50">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-cover bg-center rounded bg-gray-200" style="background-image: url('${e.LogoURL || 'https://via.placeholder.com/50'}')"></div>
+                            <div><span class="font-bold text-p-dark">${e.Year}</span> ${e.School}</div>
+                        </div>
+                        <div class="space-x-2">
+                            <button onclick='app.editEdu(${JSON.stringify(e)})' class="text-blue-500 text-sm hover:underline font-medium">แก้ไข</button>
+                            <button onclick="app.deleteItem('education', '${e.ID}')" class="text-red-500 text-sm hover:underline font-medium">ลบ</button>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Fill Act List (Dashboard): Change thumb to background
+                document.getElementById('dash-act-list').innerHTML = activities.map(a => `
+                    <div class="bg-white p-3 rounded border flex gap-2 relative hover:shadow-sm transition">
+                        <div class="w-16 h-16 bg-cover bg-center rounded bg-gray-200 flex-shrink-0" style="background-image: url('${a.ImageURL || 'https://via.placeholder.com/150'}')"></div>
+                        <div class="flex-grow overflow-hidden">
+                            <div class="font-bold truncate text-gray-800">${a.Title}</div>
+                            <div class="text-xs text-gray-500">${a.Category}</div>
+                        </div>
+                        <div class="absolute top-2 right-2 space-x-1 bg-white/90 p-1 rounded shadow-sm">
+                            <button onclick='app.editAct(${JSON.stringify(a)})' class="text-blue-500 text-xs p-1 hover:bg-blue-50 rounded"><i class="fas fa-pen"></i></button>
+                            <button onclick="app.deleteItem('activities', '${a.ID}')" class="text-red-500 text-xs p-1 hover:bg-red-50 rounded"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            },
+
+            // --- SAVE ACTIONS ---
+            async saveProfile(e) {
+                e.preventDefault();
+                await this.post({
+                    action: 'updateProfile',
+                    profile: {
+                        name: document.getElementById('d-name').value,
+                        bio: document.getElementById('d-bio').value,
+                        image: document.getElementById('d-img').value,
+                        email: document.getElementById('d-email').value,
+                        phone: document.getElementById('d-phone').value,
+                        facebook: document.getElementById('d-fb').value,
+                        instagram: document.getElementById('d-ig').value,
+                        line: document.getElementById('d-line').value
+                    }
+                });
+                alert('Profile Saved');
+                await this.fetchData(); 
+                this.renderDashboard();
+            },
+
+            editEdu(item) {
+                document.getElementById('edu-id').value = item.ID;
+                document.getElementById('edu-year').value = item.Year;
+                document.getElementById('edu-level').value = item.Level;
+                document.getElementById('edu-school').value = item.School;
+                document.getElementById('edu-gpa').value = item.GPA;
+                document.getElementById('edu-logo').value = item.LogoURL || ''; // Load Logo
+                
+                document.getElementById('edu-submit-btn').innerText = "บันทึกการแก้ไข";
+                document.getElementById('edu-submit-btn').classList.replace('bg-green-500', 'bg-blue-500');
+                document.getElementById('edu-submit-btn').classList.replace('hover:bg-green-600', 'hover:bg-blue-600');
+                document.getElementById('edu-cancel-btn').classList.remove('hidden');
+                document.getElementById('edu-form-title').innerText = "แก้ไขข้อมูลการศึกษา";
+                
+                window.scrollTo(0,0);
+            },
+            resetEduForm() {
+                document.getElementById('edu-id').value = "";
+                document.getElementById('edu-year').value = "";
+                document.getElementById('edu-level').value = "";
+                document.getElementById('edu-school').value = "";
+                document.getElementById('edu-gpa').value = "";
+                document.getElementById('edu-logo').value = "";
+                
+                document.getElementById('edu-submit-btn').innerText = "เพิ่มรายการ";
+                document.getElementById('edu-submit-btn').classList.replace('bg-blue-500', 'bg-green-500');
+                document.getElementById('edu-submit-btn').classList.replace('hover:bg-blue-600', 'hover:bg-green-600');
+                document.getElementById('edu-cancel-btn').classList.add('hidden');
+                document.getElementById('edu-form-title').innerText = "เพิ่มข้อมูลการศึกษาใหม่";
+            },
+            async saveEducation(e) {
+                e.preventDefault();
+                const id = document.getElementById('edu-id').value;
+                await this.post({
+                    action: id ? 'edit' : 'add',
+                    type: 'education',
+                    id: id,
+                    year: document.getElementById('edu-year').value,
+                    level: document.getElementById('edu-level').value,
+                    school: document.getElementById('edu-school').value,
+                    gpa: document.getElementById('edu-gpa').value,
+                    logo: document.getElementById('edu-logo').value // Save Logo
+                });
+                this.resetEduForm();
+                await this.fetchData();
+                this.renderDashboard();
+            },
+
+            editAct(item) {
+                document.getElementById('act-id').value = item.ID;
+                document.getElementById('act-title').value = item.Title;
+                document.getElementById('act-desc').value = item.Description;
+                document.getElementById('act-cat').value = item.Category;
+                document.getElementById('act-img').value = item.ImageURL;
+
+                document.getElementById('act-submit-btn').innerText = "บันทึกการแก้ไข";
+                document.getElementById('act-submit-btn').classList.replace('bg-purple-500', 'bg-blue-500');
+                document.getElementById('act-cancel-btn').classList.remove('hidden');
+                document.getElementById('act-form-title').innerText = "แก้ไขกิจกรรม";
+                window.scrollTo(0,0);
+            },
+            resetActForm() {
+                document.getElementById('act-id').value = "";
+                document.getElementById('act-title').value = "";
+                document.getElementById('act-desc').value = "";
+                document.getElementById('act-cat').value = "";
+                document.getElementById('act-img').value = "";
+
+                document.getElementById('act-submit-btn').innerText = "เพิ่มกิจกรรม";
+                document.getElementById('act-submit-btn').classList.replace('bg-blue-500', 'bg-purple-500');
+                document.getElementById('act-cancel-btn').classList.add('hidden');
+                document.getElementById('act-form-title').innerText = "เพิ่มกิจกรรมใหม่";
+            },
+            async saveActivity(e) {
+                e.preventDefault();
+                const id = document.getElementById('act-id').value;
+                await this.post({
+                    action: id ? 'edit' : 'add',
+                    type: 'activities',
+                    id: id,
+                    title: document.getElementById('act-title').value,
+                    desc: document.getElementById('act-desc').value,
+                    category: document.getElementById('act-cat').value,
+                    image: document.getElementById('act-img').value
+                });
+                this.resetActForm();
+                await this.fetchData();
+                this.renderDashboard();
+            },
+
+            async deleteItem(type, id) {
+                if(!confirm("ต้องการลบรายการนี้ใช่ไหม?")) return;
+                await this.post({ action: 'delete', type, id });
+                await this.fetchData();
+                this.renderDashboard();
+            }
+        };
+
+        window.onload = () => app.init();
+    </script>
+</body>
+</html>
