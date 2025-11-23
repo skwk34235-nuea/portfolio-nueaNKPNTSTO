@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link href="https://lh3.googleusercontent.com/d/1ZaqaGtuNJVTbq2ZpS2f5zkkSXdVCLNJ-" rel="icon">
-'
+
     <script>
         // 🔴 URL API 🔴
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxn5Fo69884yHByJAq1n7cPslpIbume1D0PNKXxP9wcXL3WYsxQy04uBhiUKTDBMoMF/exec"; 
@@ -68,6 +68,10 @@
             color: white;
             border-color: #78A3D4;
         }
+
+        /* Modal Animation */
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .animate-zoomIn { animation: zoomIn 0.2s ease-out forwards; }
     </style>
 </head>
 <body class="bg-gray-50 font-sans text-gray-700 flex flex-col min-h-screen">
@@ -131,11 +135,10 @@
                     <button onclick="app.filterActivities('all', this)" class="filter-btn active">ทั้งหมด</button>
                     <button onclick="app.filterActivities('การเรียน', this)" class="filter-btn">การเรียน</button>
                     <button onclick="app.filterActivities('ศิลปหัตถกรรม', this)" class="filter-btn">ศิลปหัตถกรรม</button>
-                    <button onclick="app.filterActivities('ดนตรี/เพลง', this)" class="filter-btn">ตนดรี/เพลง</button>
+                    <button onclick="app.filterActivities('ดนตรี/เพลง', this)" class="filter-btn">ดนตรี/เพลง</button>
                     <button onclick="app.filterActivities('ความสนใจพิเศษ', this)" class="filter-btn">ความสนใจพิเศษ</button>
                 </div>
 
-                <!-- Grid items-start เพื่อให้การ์ดที่มีความสูงต่างกันไม่ยืดตามกัน -->
                 <div id="full-activity-list" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start"></div>
                 <div id="no-activity-msg" class="text-center text-gray-500 py-10 hidden">ไม่พบกิจกรรมในหมวดหมู่นี้</div>
             </div>
@@ -248,7 +251,7 @@
                             <textarea id="act-desc" class="border p-2 rounded" placeholder="รายละเอียด"></textarea>
                             <div class="grid grid-cols-2 gap-3">
                                 
-                                <!-- Dropdown + Custom Input -->
+                                <!-- Updated Dropdown -->
                                 <div>
                                     <label class="text-xs text-gray-500 mb-1 block">หมวดหมู่</label>
                                     <select id="act-cat" class="border p-2 rounded w-full bg-white" onchange="app.handleCatChange(this)">
@@ -294,6 +297,48 @@
             <span class="cursor-pointer hover:text-white" onclick="router.navigate('/admin')">Admin Panel</span>
         </div>
     </footer>
+
+    <!-- ACTIVITY MODAL -->
+    <div id="activity-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onclick="app.closeModal(event)">
+        <div class="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl animate-zoomIn" onclick="event.stopPropagation()">
+            <button onclick="app.closeModal()" class="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 rounded-full p-2 text-gray-600 transition z-10 shadow-md">
+                <i class="fas fa-times text-xl w-6 h-6 flex items-center justify-center"></i>
+            </button>
+            <div class="grid grid-cols-1 md:grid-cols-2">
+                <div class="bg-gray-100 flex items-center justify-center p-4 min-h-[300px]">
+                    <img id="modal-img" src="" class="w-full h-auto object-contain max-h-[70vh] rounded shadow-sm">
+                </div>
+                <div class="p-8 flex flex-col">
+                    <span id="modal-cat" class="text-sm font-bold text-p-dark uppercase tracking-wider mb-3 bg-blue-50 inline-block w-fit px-2 py-1 rounded"></span>
+                    <h2 id="modal-title" class="text-3xl font-bold text-gray-800 mb-4 leading-tight"></h2>
+                    <p id="modal-desc" class="text-gray-600 text-lg leading-relaxed whitespace-pre-wrap"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🟢 EDUCATION MODAL -->
+    <div id="education-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onclick="app.closeModal(event)">
+        <div class="bg-white rounded-xl max-w-2xl w-full relative shadow-2xl animate-zoomIn overflow-hidden" onclick="event.stopPropagation()">
+            <button onclick="app.closeModal()" class="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 rounded-full p-2 text-gray-600 transition z-10 shadow-md">
+                <i class="fas fa-times text-xl w-6 h-6 flex items-center justify-center"></i>
+            </button>
+            <div class="flex flex-col md:flex-row">
+                <div class="bg-p-light/30 flex items-center justify-center p-8 md:w-2/5">
+                    <img id="edu-modal-logo" src="" class="w-32 h-32 object-contain bg-white rounded-full border-4 border-white shadow-md">
+                </div>
+                <div class="p-8 md:w-3/5 flex flex-col justify-center">
+                    <span id="edu-modal-year" class="text-sm font-bold text-p-dark uppercase tracking-wider mb-2 bg-blue-50 inline-block w-fit px-2 py-1 rounded"></span>
+                    <h2 id="edu-modal-school" class="text-2xl font-bold text-gray-800 mb-2 leading-tight"></h2>
+                    <p id="edu-modal-level" class="text-gray-600 text-lg mb-4 font-medium"></p>
+                    <div class="mt-auto border-t pt-4">
+                        <div class="text-sm text-gray-500 uppercase tracking-wide">เกรดเฉลี่ย (GPA)</div>
+                        <div id="edu-modal-gpa" class="text-4xl font-bold text-p-dark"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <div id="loader" class="fixed inset-0 bg-white/90 z-[100] flex items-center justify-center hidden">
         <div class="text-center">
@@ -411,7 +456,7 @@
             renderPublic() {
                 const { profile, education, activities } = this.data;
                 
-                // 1. Profile Hero: Full Image, No Crop
+                // 1. Profile Hero
                 const has = (val) => val && val.length > 1;
                 document.getElementById('home-hero').innerHTML = `
                     <img src="${profile.image || 'https://via.placeholder.com/150'}" class="w-40 h-auto mx-auto rounded-lg border-4 border-white shadow-lg mb-4 object-contain bg-white">
@@ -426,10 +471,10 @@
                     </div>
                 `;
 
-                // 2. Render Edu: Full Logo
+                // 2. Render Edu: Clickable
                 const renderEdu = (list, targetId) => {
                     document.getElementById(targetId).innerHTML = list.map(e => `
-                        <div class="bg-white p-4 rounded shadow-sm border-l-4 border-p-med flex justify-between items-center hover:shadow-md transition">
+                        <div onclick='app.openEduModal(${JSON.stringify(e).replace(/'/g, "&#39;")})' class="cursor-pointer bg-white p-4 rounded shadow-sm border-l-4 border-p-med flex justify-between items-center hover:shadow-md transition transform hover:-translate-y-1">
                             <div class="flex items-center gap-4">
                                 ${e.LogoURL 
                                     ? `<img src="${e.LogoURL}" class="w-16 h-16 object-contain bg-white border border-gray-100 rounded p-1">` 
@@ -447,11 +492,8 @@
 
                 // 3. Lists
                 renderEdu([...education].reverse().slice(0, 3), 'home-education-list');
-                
-                // 🔴 CHANGED: Random 3 activities instead of latest 3
                 const randomActivities = [...activities].sort(() => 0.5 - Math.random()).slice(0, 3);
                 this.renderActList(randomActivities, 'home-activity-list');
-                
                 renderEdu([...education].reverse(), 'full-education-list');
             },
 
@@ -480,24 +522,52 @@
                 }
             },
 
-            // 🟢 Render Act List: Full Height Image
             renderActList(list, targetId) {
                 document.getElementById(targetId).innerHTML = list.map(a => `
-                    <div class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition group border border-gray-100">
+                    <div onclick='app.openModal(${JSON.stringify(a).replace(/'/g, "&#39;")})' class="cursor-pointer bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition group border border-gray-100 transform hover:-translate-y-1">
                         <div class="w-full bg-gray-50 relative">
-                            <!-- Use object-contain or h-auto to show full height -->
                             <img src="${a.ImageURL || 'https://via.placeholder.com/300'}" class="w-full h-auto object-contain max-h-[500px] mx-auto">
                             <span class="absolute top-2 right-2 bg-white/90 px-2 py-1 text-xs rounded shadow font-bold text-p-dark">${a.Category || 'General'}</span>
                         </div>
                         <div class="p-5">
                             <h3 class="font-bold text-lg text-gray-800 mb-2">${a.Title}</h3>
-                            <p class="text-sm text-gray-600">${a.Description}</p>
+                            <p class="text-sm text-gray-600 line-clamp-2">${a.Description}</p>
                         </div>
                     </div>
                 `).join('');
             },
 
+            // --- MODALS ---
+            openModal(activity) {
+                document.getElementById('modal-img').src = activity.ImageURL || 'https://via.placeholder.com/600';
+                document.getElementById('modal-cat').innerText = activity.Category || 'Activity';
+                document.getElementById('modal-title').innerText = activity.Title;
+                document.getElementById('modal-desc').innerText = activity.Description;
+                
+                document.getElementById('activity-modal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden'; 
+            },
 
+            openEduModal(edu) {
+                document.getElementById('edu-modal-logo').src = edu.LogoURL || 'https://via.placeholder.com/150';
+                document.getElementById('edu-modal-year').innerText = edu.Year || '-';
+                document.getElementById('edu-modal-school').innerText = edu.School || 'Unknown';
+                document.getElementById('edu-modal-level').innerText = edu.Level || '-';
+                document.getElementById('edu-modal-gpa').innerText = edu.GPA || '-';
+                
+                document.getElementById('education-modal').classList.remove('hidden');
+                document.body.style.overflow = 'hidden';
+            },
+
+            closeModal(event) {
+                if (event && !event.target.classList.contains('fixed')) return; // Close only if background clicked (or button calls without event)
+                
+                document.getElementById('activity-modal').classList.add('hidden');
+                document.getElementById('education-modal').classList.add('hidden');
+                document.body.style.overflow = 'auto'; 
+            },
+
+            // --- AUTH & DASHBOARD ---
             async login(e) {
                 e.preventDefault();
                 const u = document.getElementById('u').value;
@@ -535,7 +605,6 @@
                 document.getElementById('d-ig').value = profile.instagram || '';
                 document.getElementById('d-line').value = profile.line || '';
 
-                // Dash Edu List
                 document.getElementById('dash-edu-list').innerHTML = education.map(e => `
                     <div class="flex justify-between items-center bg-white p-3 rounded border hover:bg-gray-50">
                         <div class="flex items-center gap-3">
@@ -549,7 +618,6 @@
                     </div>
                 `).join('');
 
-                // Dash Act List
                 document.getElementById('dash-act-list').innerHTML = activities.map(a => `
                     <div class="bg-white p-3 rounded border flex gap-3 relative hover:shadow-sm transition items-start">
                         <img src="${a.ImageURL || 'https://via.placeholder.com/150'}" class="w-20 h-20 object-contain bg-gray-100 rounded border flex-shrink-0">
