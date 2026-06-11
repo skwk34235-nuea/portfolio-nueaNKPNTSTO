@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio Nuea Saengthong Auncharoen</title>
+    <title>Portfolio - Education</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
@@ -35,8 +35,8 @@
                 <i class="fas fa-folder-open mr-2"></i>Portfolio
             </div>
             <div class="hidden md:flex space-x-6 font-medium">
-                <a href="index.html" class="hover:text-p-dark text-p-dark">หน้าหลัก</a>
-                <a href="education.html" class="hover:text-p-dark">ประวัติการศึกษา</a>
+                <a href="index.html" class="hover:text-p-dark">หน้าหลัก</a>
+                <a href="education.html" class="hover:text-p-dark text-p-dark">ประวัติการศึกษา</a>
                 <a href="activity.html" class="hover:text-p-dark">กิจกรรม</a>
                 <a href="admin.html" class="text-gray-400 hover:text-p-dark" title="Admin Login"><i class="fas fa-cog"></i></a>
             </div>
@@ -49,20 +49,11 @@
 
     <!-- Main Content -->
     <main id="app-root" class="flex-grow relative active">
-        <section id="view-index" class="view-section active">
-            <div id="home-hero" class="pt-16 pb-10 text-center px-4 bg-gradient-to-b from-white to-p-light/30"></div>
-            <div class="max-w-6xl mx-auto px-4 py-12">
-                <div class="flex justify-between items-end mb-6 border-b pb-2 border-gray-200">
-                    <h2 class="text-2xl font-bold text-gray-800">การศึกษาล่าสุด</h2>
-                    <button onclick="window.location.href='education.html'" class="text-sm text-p-dark hover:underline">ดูทั้งหมด <i class="fas fa-arrow-right"></i></button>
-                </div>
-                <div id="home-education-list" class="space-y-4 mb-16"></div>
-                
-                <div class="flex justify-between items-end mb-6 border-b pb-2 border-gray-200">
-                    <h2 class="text-2xl font-bold text-gray-800">กิจกรรมแนะนำ</h2>
-                    <button onclick="window.location.href='activity.html'" class="text-sm text-p-dark hover:underline">ดูทั้งหมด <i class="fas fa-arrow-right"></i></button>
-                </div>
-                <div id="home-activity-list" class="grid grid-cols-1 md:grid-cols-3 gap-6 items-start"></div>
+        <section id="view-education" class="view-section active">
+            <div class="max-w-4xl mx-auto px-4 py-8">
+                <button onclick="window.location.href='index.html'" class="mb-6 flex items-center text-sm text-gray-500 hover:text-p-dark transition"><i class="fas fa-arrow-left mr-2"></i> กลับหน้าหลัก</button>
+                <h1 class="text-3xl font-bold text-center mb-10 text-p-dark">ประวัติการศึกษาทั้งหมด</h1>
+                <div id="full-education-list" class="space-y-6 border-l-4 border-p-med pl-6 ml-4 relative"></div>
             </div>
         </section>
     </main>
@@ -75,25 +66,6 @@
             <span class="cursor-pointer hover:text-white" onclick="window.location.href='admin.html'">Admin Panel</span>
         </div>
     </footer>
-
-    <!-- ACTIVITY MODAL -->
-    <div id="activity-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onclick="app.closeModal(event)">
-        <div class="bg-white rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative shadow-2xl animate-zoomIn" onclick="event.stopPropagation()">
-            <button onclick="app.closeModal()" class="absolute top-4 right-4 bg-gray-200 hover:bg-gray-300 rounded-full p-2 text-gray-600 transition z-10 shadow-md">
-                <i class="fas fa-times text-xl w-6 h-6 flex items-center justify-center"></i>
-            </button>
-            <div class="grid grid-cols-1 md:grid-cols-2">
-                <div class="bg-gray-100 flex items-center justify-center p-4 min-h-[300px]">
-                    <img id="modal-img" src="" class="w-full h-auto object-contain max-h-[70vh] rounded shadow-sm">
-                </div>
-                <div class="p-8 flex flex-col">
-                    <span id="modal-cat" class="text-sm font-bold text-p-dark uppercase tracking-wider mb-3 bg-blue-50 inline-block w-fit px-2 py-1 rounded"></span>
-                    <h2 id="modal-title" class="text-3xl font-bold text-gray-800 mb-4 leading-tight"></h2>
-                    <p id="modal-desc" class="text-gray-600 text-lg leading-relaxed whitespace-pre-wrap"></p>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- EDUCATION MODAL -->
     <div id="education-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" onclick="app.closeModal(event)">

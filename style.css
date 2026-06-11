@@ -1,0 +1,88 @@
+body { scroll-behavior: smooth; }
+.loader { border-top-color: #78A3D4; animation: spinner 1s linear infinite; }
+@keyframes spinner { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+.blob-btn {
+    width: 3rem; height: 3rem;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 1.2rem;
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+.blob-btn:hover { transform: scale(1.1) rotate(10deg); border-radius: 50%; }
+
+/* Colors for Blobs */
+.bg-fb-blob { background: linear-gradient(135deg, #1877F2, #3b5998); }
+.bg-ig-blob { background: linear-gradient(135deg, #833AB4, #FD1D1D, #FCAF45); }
+.bg-line-blob { background: linear-gradient(135deg, #06C755, #00B900); }
+.bg-mail-blob { background: #6B7280; }
+.bg-phone-blob { background: #10B981; }
+
+.view-section { display: none; animation: fadeIn 0.3s ease-in-out; }
+.view-section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+/* Filter Buttons */
+.filter-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    border: 1px solid #e5e7eb;
+    background-color: white;
+    color: #4b5563;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+.filter-btn:hover, .filter-btn.active {
+    background-color: #78A3D4;
+    color: white;
+    border-color: #78A3D4;
+}
+
+/* Modal Animation */
+@keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+.animate-zoomIn { animation: zoomIn 0.2s ease-out forwards; }
+
+/* Scale Loading Animation (สเกลโหลดดิ้ง) */
+.scale-loader-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 6px;
+    height: 40px;
+}
+.scale-loader-bar {
+    width: 6px;
+    height: 100%;
+    background-color: #78A3D4;
+    border-radius: 4px;
+    animation: scaleLoader 1s ease-in-out infinite;
+}
+.scale-loader-bar:nth-child(2) { animation-delay: 0.1s; }
+.scale-loader-bar:nth-child(3) { animation-delay: 0.2s; }
+.scale-loader-bar:nth-child(4) { animation-delay: 0.3s; }
+.scale-loader-bar:nth-child(5) { animation-delay: 0.4s; }
+
+@keyframes scaleLoader {
+    0%, 100% { transform: scaleY(0.4); opacity: 0.5; }
+    50% { transform: scaleY(1); opacity: 1; }
+}
+
+/* Skeleton Loading Effect */
+.skeleton {
+    background: #e2e8f0;
+    background: linear-gradient(110deg, #ececec 8%, #f5f5f5 18%, #ececec 33%);
+    background-size: 200% 100%;
+    animation: 1.5s skeleton-shimmer linear infinite;
+}
+@keyframes skeleton-shimmer {
+    to { background-position-x: -200%; }
+}
+
+/* Button Loading State */
+.btn-loading {
+    pointer-events: none;
+    opacity: 0.8;
+    transform: scale(0.97);
+    transition: all 0.2s;
+}

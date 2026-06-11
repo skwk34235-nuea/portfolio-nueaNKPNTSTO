@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio - Dashboard</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://lh3.googleusercontent.com/d/1ZaqaGtuNJVTbq2ZpS2f5zkkSXdVCLNJ-" rel="icon">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Noto Sans Thai', 'sans-serif'] },
+                    colors: {
+                        'p-dark': '#78A3D4', 'p-med': '#8BADD3', 'p-light': '#CFE0EB',
+                        'fb': '#1877F2', 'ig': '#E4405F', 'line': '#06C755'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans text-gray-700 flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <nav class="bg-white/90 backdrop-blur sticky top-0 z-50 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 flex justify-between items-center py-4">
+            <div class="text-2xl font-bold text-p-dark cursor-pointer hover:opacity-80 transition" onclick="window.location.href='index.html'">
+                <i class="fas fa-folder-open mr-2"></i>Portfolio
+            </div>
+            <div class="hidden md:flex space-x-6 font-medium">
+                <a href="index.html" class="hover:text-p-dark">หน้าหลัก</a>
+                <a href="education.html" class="hover:text-p-dark">ประวัติการศึกษา</a>
+                <a href="activity.html" class="hover:text-p-dark">กิจกรรม</a>
+                <a href="admin.html" class="text-p-dark hover:text-p-dark" title="Admin Login"><i class="fas fa-cog"></i></a>
+            </div>
+            <div class="md:hidden flex items-center space-x-4">
+                <button onclick="window.location.href='index.html'" class="text-p-dark hover:bg-gray-100 p-2 rounded-full transition"><i class="fas fa-home text-xl"></i></button>
+                <button onclick="window.location.href='admin.html'" class="text-p-dark hover:bg-gray-100 p-2 rounded-full transition"><i class="fas fa-user-cog text-xl"></i></button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main id="app-root" class="flex-grow relative active">
+        <section id="view-dashboard" class="view-section active">
+            <div class="max-w-6xl mx-auto px-4 py-10">
+                <div class="flex justify-between items-center mb-8 bg-white p-4 rounded shadow-sm border border-gray-100">
+                    <div class="flex items-center">
+                        <button onclick="window.location.href='index.html'" class="mr-4 text-gray-400 hover:text-p-dark" title="Go Home"><i class="fas fa-home"></i></button>
+                        <h1 class="text-2xl font-bold text-gray-800">Dashboard</h1>
+                    </div>
+                    <button onclick="app.logout()" class="text-red-500 hover:bg-red-50 px-4 py-2 rounded border border-red-200 transition"><i class="fas fa-sign-out-alt mr-2"></i>Logout</button>
+                </div>
+
+                <div class="flex space-x-2 mb-6 border-b overflow-x-auto pb-2">
+                    <button onclick="app.switchDashTab('profile', this)" class="dash-tab px-4 py-2 border-b-2 border-p-dark font-bold hover:border-p-dark whitespace-nowrap">Profile</button>
+                    <button onclick="app.switchDashTab('education', this)" class="dash-tab px-4 py-2 border-b-2 border-transparent hover:border-p-dark whitespace-nowrap">Education</button>
+                    <button onclick="app.switchDashTab('activity', this)" class="dash-tab px-4 py-2 border-b-2 border-transparent hover:border-p-dark whitespace-nowrap">Activities</button>
+                </div>
+
+                <!-- Dash: Profile -->
+                <div id="dash-profile" class="dash-content">
+                    <div class="bg-white p-6 rounded shadow-sm max-w-2xl border border-gray-100">
+                        <form onsubmit="app.saveProfile(event)" class="space-y-4">
+                            <h3 class="font-bold border-b pb-2 text-gray-700">ข้อมูลส่วนตัว</h3>
+                            <input id="d-name" class="w-full border p-2 rounded" placeholder="Name">
+                            <textarea id="d-bio" class="w-full border p-2 rounded h-24" placeholder="Bio"></textarea>
+                            
+                            <div>
+                                <label class="text-xs text-gray-500">Profile Image</label>
+                                <div class="flex gap-2">
+                                    <input id="d-img" class="w-full border p-2 rounded" placeholder="Image URL or Upload">
+                                    <label class="bg-gray-200 px-4 py-2 rounded cursor-pointer hover:bg-gray-300 flex items-center">
+                                        <i class="fas fa-upload"></i>
+                                        <input type="file" class="hidden" onchange="app.handleUpload(this, 'd-img')">
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <h3 class="font-bold border-b pb-2 pt-4 text-gray-700">การติดต่อ</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <input id="d-email" class="border p-2 rounded" placeholder="Email">
+                                <input id="d-phone" class="border p-2 rounded" placeholder="Phone">
+                                <input id="d-fb" class="border p-2 rounded" placeholder="Facebook URL">
+                                <input id="d-ig" class="border p-2 rounded" placeholder="Instagram URL">
+                                <input id="d-line" class="border p-2 rounded" placeholder="Line URL">
+                            </div>
+                            <button type="submit" class="bg-p-dark text-white px-6 py-3 rounded w-full hover:bg-p-med font-bold shadow mt-4">บันทึก Profile</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Dash: Education -->
+                <div id="dash-education" class="dash-content hidden">
+                    <div class="bg-white p-6 rounded shadow-sm mb-6 border-l-4 border-green-400">
+                        <h3 class="font-bold mb-4 text-gray-700" id="edu-form-title">เพิ่มข้อมูลการศึกษาใหม่</h3>
+                        <form onsubmit="app.saveEducation(event)" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <input type="hidden" id="edu-id">
+                            <input id="edu-year" class="border p-2 rounded" placeholder="ปี (2567)">
+                            <input id="edu-level" class="border p-2 rounded" placeholder="ระดับ (ม.3)">
+                            <input id="edu-school" class="border p-2 rounded" placeholder="โรงเรียน">
+                            <input id="edu-gpa" class="border p-2 rounded" placeholder="เกรด">
+                            
+                            <div class="col-span-full">
+                                <label class="text-xs text-gray-500">School Logo</label>
+                                <div class="flex gap-2">
+                                    <input id="edu-logo" class="w-full border p-2 rounded" placeholder="Logo URL or Upload">
+                                    <label class="bg-gray-200 px-4 py-2 rounded cursor-pointer hover:bg-gray-300 flex items-center">
+                                        <i class="fas fa-upload"></i>
+                                        <input type="file" class="hidden" onchange="app.handleUpload(this, 'edu-logo')">
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-span-full flex gap-2 mt-2">
+                                <button type="submit" class="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 flex-grow shadow-sm transition" id="edu-submit-btn">เพิ่มรายการ</button>
+                                <button type="button" onclick="app.resetEduForm()" class="bg-gray-300 px-4 rounded hidden hover:bg-gray-400 transition" id="edu-cancel-btn">ยกเลิก</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="dash-edu-list" class="space-y-2"></div>
+                </div>
+
+                <!-- Dash: Activity -->
+                <div id="dash-activity" class="dash-content hidden">
+                    <div class="bg-white p-6 rounded shadow-sm mb-6 border-l-4 border-purple-400">
+                        <h3 class="font-bold mb-4 text-gray-700" id="act-form-title">เพิ่มกิจกรรมใหม่</h3>
+                        <form onsubmit="app.saveActivity(event)" class="grid gap-3">
+                            <input type="hidden" id="act-id">
+                            <input id="act-title" class="border p-2 rounded" placeholder="ชื่อกิจกรรม">
+                            <textarea id="act-desc" class="border p-2 rounded" placeholder="รายละเอียด"></textarea>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="text-xs text-gray-500 mb-1 block">หมวดหมู่</label>
+                                    <select id="act-cat" class="border p-2 rounded w-full bg-white" onchange="app.handleCatChange(this)">
+                                    </select>
+                                    <input id="act-cat-custom" type="text" class="border p-2 rounded w-full mt-2 hidden" placeholder="ระบุหมวดหมู่เพิ่มเติม">
+                                </div>
+                                <div class="col-span-1">
+                                     <label class="text-xs text-gray-500 mb-1 block">รูปภาพ</label>
+                                     <div class="flex gap-2">
+                                         <input id="act-img" class="w-full border p-2 rounded" placeholder="Image URL or Upload">
+                                         <label class="bg-gray-200 px-4 py-2 rounded cursor-pointer hover:bg-gray-300 flex items-center">
+                                             <i class="fas fa-upload"></i>
+                                             <input type="file" class="hidden" onchange="app.handleUpload(this, 'act-img')">
+                                         </label>
+                                     </div>
+                                </div>
+                            </div>
+                            <div class="flex gap-2 mt-2">
+                                <button type="submit" class="bg-purple-500 text-white py-2 px-4 rounded hover:bg-purple-600 flex-grow shadow-sm transition" id="act-submit-btn">เพิ่มกิจกรรม</button>
+                                <button type="button" onclick="app.resetActForm()" class="bg-gray-300 px-4 rounded hidden hover:bg-gray-400 transition" id="act-cancel-btn">ยกเลิก</button>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="dash-act-list" class="grid grid-cols-1 md:grid-cols-2 gap-4 items-start"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-gray-400 py-8 text-center mt-10">
+        <p>&copy; 2025 Portfolio Project.</p>
+        <div class="flex justify-center gap-4 mt-4 text-sm">
+            <span class="cursor-pointer hover:text-white" onclick="window.location.href='index.html'">Home</span>
+            <span class="cursor-pointer hover:text-white" onclick="window.location.href='admin.html'">Admin Panel</span>
+        </div>
+    </footer>
+
+    <!-- LOADER -->
+    <div id="loader" class="fixed inset-0 bg-white/90 z-[100] flex items-center justify-center hidden">
+        <div class="text-center">
+            <div class="scale-loader-container mb-4">
+                <div class="scale-loader-bar"></div>
+                <div class="scale-loader-bar"></div>
+                <div class="scale-loader-bar"></div>
+                <div class="scale-loader-bar"></div>
+                <div class="scale-loader-bar"></div>
+            </div>
+            <p class="text-sm text-gray-500" id="loader-text">Loading...</p>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
